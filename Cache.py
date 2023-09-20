@@ -10,7 +10,7 @@ class Cache:
         self.linhas = [CacheLine(tamanho_cache_line) for _ in range(capacidade_total // tamanho_cache_line)]
 
     def read(self, x):
-        r, t, w = self.decode_endereco(x)
+        r, t, w, s = self.decode_endereco(x)
         linha = self.linhas[r]
 
         if linha.tag == t:
@@ -21,11 +21,11 @@ class Cache:
             if linha.modif:
                 self.write_back(linha)
             linha.tag = t
-            self.ler_da_ram(linha, r)
+            self.ler_da_ram(linha, s)
             return linha.dados[w]
 
     def write(self, x, dado):
-        r, t, w = self.decode_endereco(x)
+        r, t, w, s = self.decode_endereco(x)
         linha = self.linhas[r]
 
         if linha.tag == t:
@@ -37,7 +37,7 @@ class Cache:
             if linha.modif:
                 self.write_back(linha)
             linha.tag = t
-            self.ler_da_ram(linha, r)
+            self.ler_da_ram(linha, s)
             linha.dados[w] = dado
             linha.modif = True
 
@@ -46,10 +46,10 @@ class Cache:
         s = x // self.tamanho_cache_line
         r = s % (self.capacidade_total // self.tamanho_cache_line)
         t = s // (self.capacidade_total // self.tamanho_cache_line)
-        return r, t, w
+        return r, t, w, s
 
-    def ler_da_ram(self, linha, r):
-        bloco_inicio = r * self.tamanho_cache_line
+    def ler_da_ram(self, linha, s):
+        bloco_inicio = s * self.tamanho_cache_line
         for i in range(self.tamanho_cache_line):
             linha.dados[i] = self.ram.read(bloco_inicio + i)
         linha.modif = False

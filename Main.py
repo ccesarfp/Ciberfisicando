@@ -16,6 +16,5 @@ try:
     ram.write(inicio, 110)
     ram.write(inicio + 1, 130)
     cpu.run(inicio + 1)
-    cpu.run(inicio)
 except EnderecoInvalido as e:
     print("Endereco inválido:", e.ender, file=sys.stderr)
